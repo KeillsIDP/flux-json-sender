@@ -42,3 +42,8 @@ JSON представлен листом строк
           return Mono.empty();
       }
 ```
+
+Пример интерфейса
+![Image alt](https://github.com/KeillsIDP/flux-json-sender/blob/main/gitimg/git_1.png?raw=true)
+![Image alt](https://github.com/KeillsIDP/flux-json-sender/blob/main/gitimg/git_2.png)
+
