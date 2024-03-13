@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <link href="styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id="json-stream" class="json-stream"></div>
+
+        <div class="valid-indication">
+            <h3>is valid? </h3>
+            <span id="indication"> </span>
+        </div>
+        <div class="buttons">
+            <button id="start-button">START</button>
+            <button id="stop-button">STOP</button>
+        </div>
+        <script type="text/javascript">
+            let stream;
+            var isConnected = false;
+
+            async function start() {
+                const stop = await fetch('http://localhost:8080/stop');
+                console.log("STARTING");
+                if(stream){
+                    stream.close();
+                    stream = null;
+                    isConnected = false;
+                }
+
+                var jsonString = '';
+                document.getElementById('json-stream').innerHTML = '';
+
+                stream = new EventSource('http://localhost:8080/');
+                stream.addEventListener('message', (event) => {
+                    jsonString += (jsonString==''?'':',')+event.data;
+                    document.getElementById('json-stream').innerHTML += '<p>' + event.data + '</p>';
+
+                    try {
+                        JSON.parse('['+jsonString+']');
+                        document.getElementById("indication").style.backgroundColor = "green";
+                    } catch {
+                        document.getElementById("indication").style.backgroundColor = "red";
+                    }
+
+                });
+            }
+
+            document.getElementById('start-button').addEventListener('click', () => {
+                start();
+            });
+
+            document.getElementById('stop-button').addEventListener('click', () => {
+                fetch('http://localhost:8080/stop')
+                if(stream){
+                    stream.close();
+                    stream = null;
+                    isConnected = false;
+                }
+            });
+
+            function checker() {
+                if(stream){
+                    if(stream.readyState==0 && isConnected){
+                        stream.close();
+                        stream = null;
+                        isConnected = false;
+
+                        setTimeout(checker,16);
+                        console.log("STOPPED AUTOMATICALY");
+                        return;
+                    }
+                    isConnected = stream.readyState == 1;
+                }
+                setTimeout(checker,16);
+            }
+
+            checker();
+        </script>
+    </body>
+</html>
