@@ -31,16 +31,14 @@ public class JsonStreamingController {
         if (jsonStream == null) {
             stopped = false;
             jsonStream = Flux.fromIterable(JSON_CHUNKS).takeUntil(__->stopped)
-                    .delayElements(Duration.ofSeconds(1));
+                    .delayElements(Duration.ofSeconds(5));
         }
-        System.out.println("OH");
         return jsonStream;
     }
 
     @GetMapping("/stop")
     public Mono<Void> stopStream() {
         if (jsonStream != null) {
-            System.out.println("stop");
             stopped = true;
             jsonStream = null;
         }
